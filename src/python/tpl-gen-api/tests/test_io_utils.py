@@ -1,7 +1,7 @@
 import pytest
 import os
 import tempfile
-from tpl_gen.libs.utils.io_utils import list_files_and_dirs  # Assuming your function is in `your_module`
+from tpl_gen_api.libs.utils.io_utils import list_files_and_dirs  # Assuming your function is in `your_module`
 #from ..libs.utils.env_utils import *
 
 def test_list_files_and_dirs():

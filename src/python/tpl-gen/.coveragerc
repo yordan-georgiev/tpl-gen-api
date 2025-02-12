@@ -1,3 +1,0 @@
-[run]
-include = tpl_gen* 
-omit = *.venv*

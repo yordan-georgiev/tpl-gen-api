@@ -1,4 +1,4 @@
-# import tpl_gen.lib.utils.console_utils as cw
+# import tpl_gen_api.lib.utils.console_utils as cw
 
 
 # def test_print_functions(capsys):

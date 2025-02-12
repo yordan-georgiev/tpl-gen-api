@@ -8,7 +8,7 @@ my $module_name = shift @ARGV;
 my @func_names = @ARGV;
 
 # Directory where Dockerfiles are located
-my $docker_dir = 'lib/docker/tpl-gen/x86_64/';
+my $docker_dir = 'lib/docker/tpl-gen-api/x86_64/';
 
 # Output directory for the final Dockerfile
 my $output_dir = 'src/docker/' . $module_name . '/';

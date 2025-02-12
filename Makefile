@@ -22,11 +22,11 @@ org_path := $(shell echo `basename $(dir $(abspath $(dir $$PWD)))|tr '[:upper:]'
 BASE_PATH := $(shell source $$PWD/lib/bash/funcs/resolve-dirname.func.sh ; resolve_dirname $$PWD"/../" )
 PROJ_PATH := $$PWD
 PYTHON_DIR := $(PROJ_PATH)/src/python/$(PROJ)
-TPG_PROJ_PATH := $(BASE_PATH)/$(ORG_PATH)/tpl-gen
+TPG_PROJ_PATH := $(BASE_PATH)/$(ORG_PATH)/tpl-gen-api
 
 APPUSR := appusr
 APPGRP := appgrp
-ROOT_DOCKER_NAME = ${ORG_PATH}-tpl-gen
+ROOT_DOCKER_NAME = ${ORG_PATH}-tpl-gen-api
 MOUNT_WORK_DIR := $(BASE_PATH)/$(ORG_PATH)
 HOST_AWS_DIR := $(HOME)/.aws
 DOCKER_AWS_DIR := /home/${APPUSR}/.aws
@@ -49,7 +49,7 @@ GID := $(shell id -g)
 TPL_GEN_PORT=
 
 
-.PHONY: install ## @-> install both the tf-runner and the tpl-gen containers
+.PHONY: install ## @-> install both the tf-runner and the tpl-gen-api containers
 install:
 	@clear
 	make clean-install-$(PROJ)

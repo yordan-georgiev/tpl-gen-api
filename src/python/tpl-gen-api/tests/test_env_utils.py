@@ -2,11 +2,11 @@ import os
 import pytest
 
 
-from tpl_gen.libs.utils.env_utils import *
+from tpl_gen_api.libs.utils.env_utils import *
 
 
 # Assume your functions are in a file called `your_module.py`
-from tpl_gen.libs.utils.env_utils import override_env
+from tpl_gen_api.libs.utils.env_utils import override_env
 
 def test_override_env_level_01():
     # Set environment variables

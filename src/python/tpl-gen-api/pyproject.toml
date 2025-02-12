@@ -1,14 +1,14 @@
 [tool.poetry]
-name = "tpl-gen"
+name = "tpl-gen-api"
 version = "1.8.0"
 description = "A template generator using Jinja2 and Smarty TPL files."
 authors = ["Engineering <engineering@csitea.net>"]
 maintainers = ["Engineering <engineering@csitea.net>"]
 
 packages = [
-    { include = "tpl_gen" },
-    { include = "tpl_gen/libs"},
-    { include = "tpl_gen/config"},
+    { include = "tpl_gen_api" },
+    { include = "tpl_gen_api/libs"},
+    { include = "tpl_gen_api/config"},
 
 ]
 
@@ -33,7 +33,7 @@ coverage = "^5.5"
 
 
 [tool.poetry.scripts]
-start  = "tpl_gen:main"
+start  = "tpl_gen_api:main"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

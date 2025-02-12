@@ -1,5 +1,5 @@
 # import pytest
-# from tpl_gen.lib.utils.string_utils import (
+# from tpl_gen_api.lib.utils.string_utils import (
 #     pkey_replace,
 #     substring_search,
 #     extract_pkey_names,

@@ -31,7 +31,7 @@ EOF_USAGE
   echo "[#] START generate templates ==============================================="
   while read -r env; do
     for key in ${!apps_orgs[@]}; do
-      echo ORG=\'${apps_orgs[$key]}\' APP=\'$key\' ENV=\'$env\' make do-tpl-gen # to generate the templates
+      echo ORG=\'${apps_orgs[$key]}\' APP=\'$key\' ENV=\'$env\' make do-tpl-gen-api # to generate the templates
     done
     # TODO: make env listing dynamic
     # for env in `ls cnf/env/${ORG}/${APP}/${ENV}.env.json`; do echo $env; done

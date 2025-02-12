@@ -1,7 +1,7 @@
 # from unittest.mock import patch
 # from pathlib import Path
 # import pytest
-# from tpl_gen.lib.utils.convert_utils import create_tgt_path
+# from tpl_gen_api.lib.utils.convert_utils import create_tgt_path
 
 
 
@@ -30,7 +30,7 @@
 #     for key, value in env_vars.items():
 #         monkeypatch.setenv(key, value)
 
-#     from tpl_gen.config import env_params_tpl as env
+#     from tpl_gen_api.config import env_params_tpl as env
 #     #env.init_env()
 
 #     with patch("utils.env_utils.get_env_as_dict_lower", return_value=env_vars), patch(

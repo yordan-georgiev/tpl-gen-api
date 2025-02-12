@@ -1,6 +1,6 @@
 #!/bin/bash
 
-MODULE='tpl-gen'
+MODULE='tpl-gen-api'
 
 test -z ${PROJ:-} && PROJ=${MODULE:-}
 PROJ_PATH=${APP_PATH}/${PROJ}
