@@ -62,16 +62,17 @@ do_run_actions() {
   run_funcs=''
   while read -d ' ' arg_action; do
     while read -r fnc_file; do
-      #debug func fnc_file:$fnc_file
+      # Skip files that don't match the action name BEFORE spawning subprocess
+      action_name=$(basename "$fnc_file" .func.sh)
+      action_name="do_${action_name//-/_}"
+      test "$action_name" != "$arg_action" && continue
+
+      # Only call get_function_list for matching files
       while read -r fnc_name; do
-        #debug fnc_name:$fnc_name
-        action_name=$(echo $(basename $fnc_file) | sed -e 's/.func.sh//g')
-        action_name=$(echo do_$action_name | sed -e 's/-/_/g')
-        # debug  action_name: $action_name
-        test "$action_name" != "$arg_action" && continue
+        do_log "DEBUG Sourcing $fnc_file for action $arg_action"
         source $fnc_file
         actions_found=$((actions_found + 1))
-        test "$action_name" == "$arg_action" && run_funcs="$(echo -e "${run_funcs}\n$fnc_name")"
+        run_funcs="$(echo -e "${run_funcs}\n$fnc_name")"
       done < <(get_function_list "$fnc_file")
     done < <(find "src/bash/run/" "lib/bash/funcs" -type f -name '*.func.sh' | sort)
 
@@ -124,53 +125,69 @@ do_flush_screen() {
 do_log() {
   print_ok() {
     GREEN_COLOR="\033[0;32m"
-    DEFAULT="\033[0m"
-    echo -e "${GREEN_COLOR} ✔ [OK] ${1:-} ${DEFAULT}"
+    DEFAULT_COLOR="\033[0m"
+    echo -e "${GREEN_COLOR} ✔ ${1:-} ${DEFAULT_COLOR}"
   }
 
   print_warning() {
     YELLOW_COLOR="\033[33m"
-    DEFAULT="\033[0m"
-    echo -e "${YELLOW_COLOR} ⚠ ${1:-} ${DEFAULT}"
+    DEFAULT_COLOR="\033[0m"
+    echo -e "${YELLOW_COLOR} ⚠ ${1:-} ${DEFAULT_COLOR}"
   }
 
   print_info() {
     BLUE_COLOR="\033[0;34m"
-    DEFAULT="\033[0m"
-    echo -e "${BLUE_COLOR} ℹ ${1:-} ${DEFAULT}"
+    DEFAULT_COLOR="\033[0m"
+    echo -e "${BLUE_COLOR} ℹ ${1:-} ${DEFAULT_COLOR}"
   }
 
   print_fail() {
     RED_COLOR="\033[0;31m"
-    DEFAULT="\033[0m"
-    echo -e "${RED_COLOR} ❌ [NOK] ${1:-}${DEFAULT}"
+    DEFAULT_COLOR="\033[0m"
+    echo -e "${RED_COLOR} ✘ ${1:-}${DEFAULT_COLOR}"
+  }
+
+  print_debug() {
+    GRAY_COLOR="\033[0;37m"
+    DEFAULT_COLOR="\033[0m"
+    echo -e "${GRAY_COLOR} ⚙ ${1:-}${DEFAULT_COLOR}"
   }
 
   type_of_msg=$(echo $* | cut -d" " -f1)
   action=$(echo $* | cut -d" " -f2)
   rest_of_msg=$(echo $* | cut -d" " -f3-)
+  test -z ${HOST_NAME:-} && export HOST_NAME=$(hostname -s)
+  [ -z "${PROJ_PATH}" ] &&
+    export PROJ_PATH=$(cd $(dirname $(perl -e 'use File::Basename; use Cwd "abs_path"; print dirname(abs_path($ARGV[0]))' -- "$0"))/../../.. && pwd)
+  [ -z "${PROJ}" ] && export PROJ=$(basename $PROJ_PATH)
+
+  # Pad [TYPE] to 9 chars (longest is [WARNING]) so dates align vertically
+  local padded_type
+  [[ "$type_of_msg" == "WARNING" ]] && type_of_msg="WARN"
+  padded_type=$(printf "%-7s" "[$type_of_msg]")
 
   # Check if the action is START or STOP and adjust the length
   if [[ "$action" == "START" || "$action" == "STOP" ]]; then
     # Adjust the length of 'START' or 'STOP' token for alignment
     formatted_action=$(printf "%-5s" "$action") # 5 characters wide, adjust as needed
-    msg=" [$type_of_msg] $(date "+%Y-%m-%d %H:%M:%S %Z") [${PROJ:-}][@${HOST_NAME:-}] [$$] $formatted_action $rest_of_msg"
+    msg="${padded_type} $(date "+%Y-%m-%d %H:%M:%S %Z") [${PROJ:-}][@${HOST_NAME:-}] [$$] $formatted_action $rest_of_msg"
   else
     # Handle other types of messages without formatting the action
-    msg=" [$type_of_msg] $(date "+%Y-%m-%d %H:%M:%S %Z") [${PROJ:-}][@${HOST_NAME:-}] [$$] $action $rest_of_msg"
+    msg="${padded_type} $(date "+%Y-%m-%d %H:%M:%S %Z") [${PROJ:-}][@${HOST_NAME:-}] [$$] $action $rest_of_msg"
   fi
 
   log_dir="${PROJ_PATH:-}/dat/log/bash"
-  mkdir -p $log_dir
+  mkdir -p $log_dir || mkdir -p $HOME/var/log/$PROJ && log_dir=$HOME/var/log/$PROJ
   log_file="$log_dir/${PROJ:-}."$(date "+%Y%m%d")'.log'
 
   case "$type_of_msg" in
   'FATAL') print_fail "$msg" | tee -a $log_file ;;
   'ERROR') print_fail "$msg" | tee -a $log_file ;;
-  'WARNING') print_warning "$msg" | tee -a $log_file ;;
+  'WARNING'|'WARN') print_warning "$msg" | tee -a $log_file ;;
   'INFO') print_info "$msg" | tee -a $log_file ;;
   'OK') print_ok "$msg" | tee -a $log_file ;;
-  *) echo "$msg" | tee -a $log_file ;;
+  'DEBUG') print_debug "$msg" | tee -a $log_file ;;
+  *) echo " · $msg" | tee -a $log_file ;;
   esac
 }
 
